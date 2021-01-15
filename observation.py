@@ -1,10 +1,12 @@
 import datetime
 from pymongo import MongoClient
+import os
 
+creds = os.getenv("MONGO")
 
 class Observation:
     client = MongoClient(
-        'mongodb+srv://mongoCredentials@main.kc4dw.mongodb.net/weather?retryWrites=true&w=majority')
+        f'mongodb+srv://{creds}@main.kc4dw.mongodb.net/weather?retryWrites=true&w=majority')
     db = client.get_database('weather')
     records = db.data
 
