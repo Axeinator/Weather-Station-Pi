@@ -1,7 +1,6 @@
 import RPi.GPIO as GPIO
 import dht11
 from observation import Observation
-from windyAPI import Windy
 import time
 import datetime
 import logging
@@ -29,25 +28,14 @@ def mongoUpload():
                 logging.warning(f"Invalid result at {datetime.datetime.now()}")
         except:
             logging.error(f"Upload error at {datetime.datetime.now()}")
-        time.sleep(120)
 
-def windyUpload():
-    while True:
-        try:
-            result = sensor.read()
-            if result.is_valid():
-                Windy.upload(toFaren(result.temperature), result.humidity)
-            else:
-                logging.warning(f'Invalid result at {datetime.datetime.now()}')
-        except:
-            logging.error(f"Windy Upload error at {datetime.datetime.now()}")
-        time.sleep(120)
-
-if __name__ == '__main__':
-    mongo = Process(target=mongoUpload)
-    windyStation = Process(target=windyUpload)
-    mongo.start()
-    windyStation.start()
-    mongo.join()
-    windyStation.join() 
-    logging.info(f"Multiprocessing success. Both processes started at {datetime.datetime.now()}")
+while True:
+    try:
+        result = sensor.read()
+        if result.is_valid():
+            Observation.upload(toFaren(result.temperature), result.humidity)
+        else:
+            logging.warning(f"Invalid result at {datetime.datetime.now()}")
+    except:
+        logging.error(f"Upload error at {datetime.datetime.now()}")
+    time.sleep(120)
